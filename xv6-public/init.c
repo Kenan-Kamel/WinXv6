@@ -6,7 +6,8 @@
 #include "fcntl.h"
 
 char *desktop_argv[] = { "desktop", 0 };
-char *sh_argv[] = { "sh", 0 };
+char *sh_argv[]      = { "sh",      0 };
+char *rshd_argv[]    = { "rshd",    0 };
 
 int
 main(void)
@@ -20,22 +21,35 @@ main(void)
   dup(0);  // stdout
   dup(0);  // stderr
 
+  // rshd: persistent networking daemon
+  if(fork() == 0){
+    exec("rshd", rshd_argv);
+    printf(1, "init: exec rshd failed\n");
+    exit();
+  }
+
+  // desktop: GUI session. In nographic mode, screen_init fails and
+  // desktop exits immediately; the sh loop below takes over.
+  if(fork() == 0){
+    exec("desktop", desktop_argv);
+    printf(1, "init: exec desktop failed\n");
+    exit();
+  }
+
+  // sh loop: serial-console shell, always available
   for(;;){
-    printf(1, "init: starting desktop\n");
+    printf(1, "init: starting sh\n");
     pid = fork();
     if(pid < 0){
       printf(1, "init: fork failed\n");
       exit();
     }
     if(pid == 0){
-      exec("desktop", desktop_argv);
-      // If desktop fails, fall back to shell
-      printf(1, "init: desktop failed, starting sh\n");
       exec("sh", sh_argv);
       printf(1, "init: exec sh failed\n");
       exit();
     }
     while((wpid=wait()) >= 0 && wpid != pid)
-      printf(1, "zombie!\n");
+      ;  // silently collect desktop/rshd zombie exits
   }
 }

@@ -7,6 +7,7 @@
 #include "x86.h"
 #include "traps.h"
 #include "spinlock.h"
+#include "e1000.h"
 
 // Interrupt descriptor table (shared by all CPUs).
 uint *idt;
@@ -52,6 +53,9 @@ trap(struct trapframe *tf)
       ticks++;
       wakeup(&ticks);
       release(&tickslock);
+      // Poll e1000 RX ring every tick as fallback in case the PCI IRQ
+      // routing is not set up correctly by the (absent) BIOS.
+      e1000poll();
     }
     lapiceoi();
     break;
@@ -74,6 +78,8 @@ trap(struct trapframe *tf)
     uartintr();
     lapiceoi();
     break;
+  // NOTE: e1000 IRQ is handled dynamically in the default case below
+  //       because the PCI interrupt line is discovered at runtime.
   case T_IRQ0 + 7:
   case T_IRQ0 + IRQ_SPURIOUS:
     cprintf("cpu%d: spurious interrupt at %p:%p\n",
@@ -83,6 +89,12 @@ trap(struct trapframe *tf)
 
   //PAGEBREAK: 13
   default:
+    // Dynamic handler for e1000 — IRQ line is not known at compile time.
+    if(e1000_irq != 0 && tf->trapno == (uint)(T_IRQ0 + e1000_irq)){
+      e1000intr();
+      lapiceoi();
+      break;
+    }
     if(proc == 0 || (tf->cs&3) == 0){
       // In kernel, it must be our mistake.
       cprintf("unexpected trap %d from cpu %d rip %p (cr2=0x%p)\n",

@@ -157,10 +157,7 @@ main(int argc, char *argv[])
 
   printf(1, "desktop: initializing graphics...\n");
   if(screen_init(&si) < 0){
-    printf(1, "desktop: failed to init screen, falling back to shell\n");
-    char *sh_argv[] = { "sh", 0 };
-    exec("sh", sh_argv);
-    exit();
+    exit();  // nographic mode: init's sh loop provides the console shell
   }
 
   int fb_size = si.width * si.height * 4;
