@@ -34,6 +34,7 @@ main(void)
   binit();         // buffer cache
   fileinit();      // file table
   ideinit();       // disk
+  netinit();       // network (e1000 + TCP/IP stack)
   startothers();   // start other processors
   kinit2();
   userinit();      // first user process

@@ -1,7 +1,7 @@
 KERNOBJS = \
-	bio.o console.o exec.o file.o fs.o ide.o ioapic.o kalloc.o kbd.o lapic.o \
-  log.o main.o mp.o mouse.o pipe.o proc.o sleeplock.o spinlock.o string.o swtch.o \
-  syscall.o sysfile.o sysgui.o sysproc.o trapasm.o trap.o uart.o vga.o vectors.o vm.o \
+	bio.o console.o e1000.o exec.o file.o fs.o ide.o ioapic.o kalloc.o kbd.o lapic.o \
+  log.o main.o mp.o mouse.o net.o pci.o pipe.o proc.o sleeplock.o spinlock.o string.o swtch.o \
+  syscall.o sysfile.o sysgui.o sysnet.o sysproc.o trapasm.o trap.o uart.o vga.o vectors.o vm.o \
 #
 
 UNAME_S := $(shell uname -s)
@@ -123,7 +123,7 @@ mkfs: mkfs.c fs.h
 
 UPROGS= \
 	_cat _echo _forktest _grep _init _kill _ln _ls _mkdir \
-	_rm _sh _stressfs _usertests _wc _zombie _desktop \
+	_rm _rshd _sh _stressfs _usertests _wc _zombie _desktop \
 #
 
 fs.img: mkfs README $(UPROGS)
@@ -161,7 +161,9 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 ifndef CPUS
 CPUS := 2
 endif
-QEMUOPTS = -cpu qemu64,+rdtscp -nic none -hda xv6.img -hdb fs.img -smp sockets=$(CPUS) -m 512 $(QEMUEXTRA)
+QEMUOPTS = -cpu qemu64,+rdtscp \
+	-netdev user,id=net0,hostfwd=tcp::2323-:23 -device e1000,netdev=net0 \
+	-hda xv6.img -hdb fs.img -smp sockets=$(CPUS) -m 512 $(QEMUEXTRA)
 
 qemu: fs.img xv6.img
 	$(QEMU) -serial mon:stdio $(QEMUOPTS)
