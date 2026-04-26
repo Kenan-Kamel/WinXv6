@@ -133,8 +133,9 @@ clean:
 	rm -f *.tex *.dvi *.idx *.aux *.log *.ind *.ilg \
 	*.o *.d *.asm *.sym vectors.S bootblock entryother \
 	initcode initcode.out kernel xv6.img fs.img kernelmemfs mkfs \
-	.gdbinit .depend \
+	.gdbinit .depend xv6-grub.iso \
 	_*
+	rm -rf iso/
 
 # make a printout
 FILES = $(shell grep -v '^\#' runoff.list)
@@ -171,6 +172,23 @@ qemu-gui: fs.img xv6.img
 
 qemu-memfs: xv6memfs.img
 	$(QEMU) -drive file=xv6memfs.img,index=0,media=disk,format=raw -smp $(CPUS) -m 256
+
+# Bootable ISO via GRUB2 (works on BIOS + UEFI bare-metal)
+xv6-grub.iso: kernelmemfs grub/grub.cfg
+	mkdir -p iso/boot/grub
+	cp kernelmemfs iso/boot/kernelmemfs
+	cp grub/grub.cfg iso/boot/grub/grub.cfg
+	grub-mkrescue -o xv6-grub.iso iso 2>/dev/null
+	rm -rf iso
+
+# Flash ISO to USB. Usage: make usb-install USB=/dev/sdX
+usb-install: xv6-grub.iso
+	@test -n "$(USB)" || (echo "Usage: make usb-install USB=/dev/sdX" && exit 1)
+	dd if=xv6-grub.iso of=$(USB) bs=4M status=progress conv=fsync
+
+# Sanity-check the ISO in QEMU before flashing
+qemu-iso: xv6-grub.iso
+	$(QEMU) -cdrom xv6-grub.iso -m 512 -serial mon:stdio
 
 qemu-nox: fs.img xv6.img
 	$(QEMU) -nographic $(QEMUOPTS) -action reboot=shutdown
