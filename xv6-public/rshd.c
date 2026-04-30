@@ -63,12 +63,12 @@ main(void)
   dbg("rshd: ready — connect with: nc <host-ip> 2323  (password: xv6)\n");
 
   for(;;){
-    // Reap any finished child processes to avoid zombies
-    while(wait() >= 0)
-      ;
-
     int cfd = accept(lfd, 0, 0);
     if(cfd < 0) continue;
+
+    // Reap any previously finished child processes
+    while(wait() >= 0)
+      ;
 
     int pid = fork();
     if(pid < 0){ close(cfd); continue; }

@@ -1002,7 +1002,7 @@ draw_window(struct window *w, int idx)
     fb_text_nobg(&screen, cx+(cw-fb_text_width(t1))/2, cy+90, t1, COL_TEXT_WHITE);
     char *t2 = "Version 3.0 - Full Desktop";
     fb_text_nobg(&screen, cx+(cw-fb_text_width(t2))/2, cy+112, t2, COL_TEXT_LIGHT);
-    char *t3 = "GNOME-inspired desktop for xv6";
+    char *t3 = "Windows XP-inspired desktop for xv6";
     fb_text_nobg(&screen, cx+(cw-fb_text_width(t3))/2, cy+145, t3, COL_TEXT_LIGHT);
     char *t4 = "Snake | Minesweeper | Paint | Craft";
     fb_text_nobg(&screen, cx+(cw-fb_text_width(t4))/2, cy+170, t4, COL_TEXT_LIGHT);
@@ -2163,7 +2163,7 @@ doom_init(struct window *w)
   d->armor = 0;
   d->ammo = 24;
   d->max_ammo = 99;
-  d->weapon = 1; // pistol
+  d->weapon = 0; // sword
   d->level = 0;
   d->score = 0;
   d->kills = 0;
@@ -2456,9 +2456,9 @@ doom_handle_key(struct window *w, int key)
   }
 
   // Number keys switch weapons
-  if(key == '1') d->weapon = 0; // fist
-  if(key == '2') d->weapon = 1; // pistol
-  if(key == '3') d->weapon = 2; // shotgun
+  if(key == '1') d->weapon = 0; // sword
+  if(key == '2') d->weapon = 1; // pickaxe
+  if(key == '3') d->weapon = 2; // bow
 
   // Check pickups
   for(int i = 0; i < d->num_pickups; i++){
@@ -2669,7 +2669,7 @@ doom_draw(struct window *w)
     dist = dist * cos_diff / FP_ONE;
     if(dist <= 0) dist = 1;
 
-    zbuf[col] = dist;
+    if(col < 424) zbuf[col] = dist;
 
     // Wall height
     int wall_h = view_h * FP_ONE / dist;
@@ -2887,7 +2887,7 @@ doom_draw(struct window *w)
   // Hearts: 10 hearts (each = 10 HP)
   for(int hi = 0; hi < 10; hi++){
     int hx = cx + 4 + hi * 18;
-    int hy = hud_y + 4;
+    int hy = hud_y + 2;
     int filled = d->health - hi * 10;
     uint hcol = filled >= 10 ? RGB(220,50,50) : (filled > 0 ? RGB(130,30,30) : RGB(50,20,20));
     // Heart shape using rectangles
