@@ -163,7 +163,7 @@ ifndef CPUS
 CPUS := 2
 endif
 QEMUOPTS = -cpu qemu64,+rdtscp \
-	-netdev user,id=net0,hostfwd=tcp::2323-:23 -device e1000,netdev=net0 \
+	-netdev user,id=net0,hostfwd=tcp:0.0.0.0:2323-:23 -device e1000,netdev=net0 \
 	-hda xv6.img -hdb fs.img -smp sockets=$(CPUS) -m 512 $(QEMUEXTRA)
 
 qemu: fs.img xv6.img
