@@ -254,8 +254,8 @@ setup_desktop(void)
   icons[6].x = col2_x; icons[6].y = y + spacing*2;
   num_icons++;
 
-  gui_strcpy(icons[7].name, "Doom");
-  gui_strcpy(icons[7].target, "doom");
+  gui_strcpy(icons[7].name, "Craft");
+  gui_strcpy(icons[7].target, "craft");
   icons[7].icon_type = ICON_GAME;
   icons[7].x = col2_x; icons[7].y = y + spacing*3;
   num_icons++;
@@ -293,8 +293,8 @@ static void open_app(char *target) {
   } else if(gui_strcmp(target, "paint") == 0){
     int idx = open_window("Paint", WIN_PAINT, 200, 60, 360, 280);
     if(idx >= 0) paint_init(&windows[idx]);
-  } else if(gui_strcmp(target, "doom") == 0){
-    int idx = open_window("Doom 3D", WIN_DOOM, 150, 50, 424, 280);
+  } else if(gui_strcmp(target, "craft") == 0){
+    int idx = open_window("Craft", WIN_DOOM, 150, 50, 424, 280);
     if(idx >= 0) doom_init(&windows[idx]);
   } else if(gui_strcmp(target, "calc") == 0){
     int idx = open_window("Calculator", WIN_CALCULATOR, 350, 120, 240, 320);
@@ -458,7 +458,7 @@ handle_input(void)
         gui_strcpy(ctx_menu.items[2], "Editor");
         gui_strcpy(ctx_menu.items[3], "Calc");
         gui_strcpy(ctx_menu.items[4], "Snake");
-        gui_strcpy(ctx_menu.items[5], "Doom");
+        gui_strcpy(ctx_menu.items[5], "Craft");
         gui_strcpy(ctx_menu.items[6], "Settings");
         gui_strcpy(ctx_menu.items[7], "About");
         ctx_menu.item_count = 8;
@@ -1004,7 +1004,7 @@ draw_window(struct window *w, int idx)
     fb_text_nobg(&screen, cx+(cw-fb_text_width(t2))/2, cy+112, t2, COL_TEXT_LIGHT);
     char *t3 = "GNOME-inspired desktop for xv6";
     fb_text_nobg(&screen, cx+(cw-fb_text_width(t3))/2, cy+145, t3, COL_TEXT_LIGHT);
-    char *t4 = "Snake | Minesweeper | Paint | Doom";
+    char *t4 = "Snake | Minesweeper | Paint | Craft";
     fb_text_nobg(&screen, cx+(cw-fb_text_width(t4))/2, cy+170, t4, COL_TEXT_LIGHT);
     char *t5 = "Calculator | File Manager | Editor";
     fb_text_nobg(&screen, cx+(cw-fb_text_width(t5))/2, cy+190, t5, COL_TEXT_LIGHT);
@@ -2580,9 +2580,15 @@ doom_draw(struct window *w)
   if(!d->dead && !d->level_complete)
     doom_update_enemies(d);
 
-  // Draw ceiling and floor
-  fb_gradient_v(&screen, cx, cy, rw, view_h/2, RGB(20,20,40), RGB(50,50,70));
-  fb_gradient_v(&screen, cx, cy+view_h/2, rw, view_h/2, RGB(70,50,35), RGB(35,25,18));
+  // Minecraft: sky ceiling + grass/dirt floor
+  fb_fill_rect(&screen, cx, cy, rw, view_h/2, RGB(102,153,216));
+  // Clouds (simple white rectangles at top)
+  fb_fill_rect(&screen, cx + rw/6,   cy + 8,  44, 12, RGB(240,240,255));
+  fb_fill_rect(&screen, cx + rw/2,   cy + 16, 52, 10, RGB(240,240,255));
+  fb_fill_rect(&screen, cx + rw*3/4, cy + 6,  38, 14, RGB(240,240,255));
+  // Grass strip + dirt below
+  fb_fill_rect(&screen, cx, cy + view_h/2,     rw, 4,           RGB(94,139,75));
+  fb_fill_rect(&screen, cx, cy + view_h/2 + 4, rw, view_h/2-4, RGB(101,67,33));
 
   // Z-buffer for sprite rendering
   int zbuf[424]; // max window width
@@ -2673,16 +2679,16 @@ doom_draw(struct window *w)
     if(wall_top < 0) wall_top = 0;
     if(wall_bot > view_h) wall_bot = view_h;
 
-    // Wall colors by type
+    // Minecraft block colors
     uint wc;
     switch(wall_type){
-    case 1: wc = RGB(160,40,40); break;    // red brick
-    case 2: wc = RGB(40,40,160); break;    // blue stone
-    case 3: wc = RGB(40,130,40); break;    // green moss
-    case 4: wc = RGB(150,150,40); break;   // yellow pillar
-    case 5: wc = RGB(0,200,100); break;    // exit door (green)
-    case 6: wc = RGB(200,0,0); break;      // locked door (red)
-    default: wc = RGB(128,128,128); break;
+    case 1: wc = RGB(125,125,125); break;  // stone
+    case 2: wc = RGB(157,128,77);  break;  // oak wood planks
+    case 3: wc = RGB(94,139,75);   break;  // grass side
+    case 4: wc = RGB(101,67,33);   break;  // dirt
+    case 5: wc = RGB(100,50,200);  break;  // nether portal (exit)
+    case 6: wc = RGB(139,90,43);   break;  // oak door (locked)
+    default: wc = RGB(125,125,125); break;
     }
 
     if(side){
@@ -2722,10 +2728,10 @@ doom_draw(struct window *w)
         sx = d->pickups[i].x; sy = d->pickups[i].y;
         alive_or_active = 1;
         switch(d->pickups[i].type){
-        case 0: sprite_color = RGB(255,0,0); break;    // health = red cross
-        case 1: sprite_color = RGB(200,200,0); break;  // ammo = yellow
-        case 2: sprite_color = RGB(0,100,200); break;  // armor = blue
-        case 3: sprite_color = RGB(255,215,0); break;  // key = gold
+        case 0: sprite_color = RGB(255,50,50);   break;  // heart (health)
+        case 1: sprite_color = RGB(180,120,50);  break;  // arrow (ammo)
+        case 2: sprite_color = RGB(160,160,200); break;  // iron chestplate (armor)
+        case 3: sprite_color = RGB(68,213,234);  break;  // diamond (key)
         default: sprite_color = RGB(255,255,255); break;
         }
         sprite_h_scale = 3; // smaller
@@ -2737,10 +2743,10 @@ doom_draw(struct window *w)
           sprite_color = RGB(255,255,255); // flash white when hurt
         else {
           switch(d->enemies[i].type){
-          case 0: sprite_color = RGB(180,80,40); break;  // imp = brown
-          case 1: sprite_color = RGB(180,40,80); break;   // demon = pink
-          case 2: sprite_color = RGB(200,0,0); break;     // boss = dark red
-          default: sprite_color = RGB(180,180,180); break;
+          case 0: sprite_color = RGB(80,120,50);   break;  // zombie = green-gray
+          case 1: sprite_color = RGB(200,200,200); break;  // skeleton = bone white
+          case 2: sprite_color = RGB(50,160,50);   break;  // creeper = bright green
+          default: sprite_color = RGB(150,150,150); break;
           }
         }
         sprite_h_scale = d->enemies[i].type == 2 ? 1 : 2; // boss is bigger
@@ -2843,93 +2849,96 @@ doom_draw(struct window *w)
     }
   }
 
-  // Weapon display at bottom center
+  // Minecraft weapon display
   int wpn_cx = cx + rw/2;
-  int wpn_y = cy + view_h - 30;
-  if(d->shoot_timer > 0){
-    // Muzzle flash
-    fb_fill_rect(&screen, wpn_cx-4, wpn_y-20, 8, 15, RGB(255,255,100));
-    fb_fill_rect(&screen, wpn_cx-2, wpn_y-25, 4, 10, RGB(255,200,50));
-  }
+  int wpn_y = cy + view_h - 50;
+  if(d->shoot_timer > 0) wpn_y += 15; // swing effect
   if(d->weapon == 0){
-    // Fist
-    fb_fill_rect(&screen, wpn_cx-10, wpn_y, 20, 25, RGB(200,160,120));
-    fb_fill_rect(&screen, wpn_cx-8, wpn_y+2, 16, 8, RGB(180,140,100));
+    // Sword: gray blade + brown handle
+    fb_fill_rect(&screen, wpn_cx-4,  wpn_y,    8,  30, RGB(180,180,200));
+    fb_fill_rect(&screen, wpn_cx-8,  wpn_y+28, 16, 4,  RGB(120,80,40));
+    fb_fill_rect(&screen, wpn_cx-2,  wpn_y+32, 4,  10, RGB(120,80,40));
   } else if(d->weapon == 1){
-    // Pistol
-    fb_fill_rect(&screen, wpn_cx-3, wpn_y-15, 6, 25, RGB(100,100,100));
-    fb_fill_rect(&screen, wpn_cx-8, wpn_y+5, 16, 12, RGB(140,100,60));
+    // Pickaxe: brown handle + gray head
+    fb_fill_rect(&screen, wpn_cx-3,  wpn_y+10, 6,  30, RGB(120,80,40));
+    fb_fill_rect(&screen, wpn_cx-14, wpn_y,    28, 10, RGB(180,180,200));
+    fb_fill_rect(&screen, wpn_cx-14, wpn_y,    10, 18, RGB(180,180,200));
   } else if(d->weapon == 2){
-    // Shotgun
-    fb_fill_rect(&screen, wpn_cx-4, wpn_y-20, 8, 30, RGB(80,80,80));
-    fb_fill_rect(&screen, wpn_cx-2, wpn_y-20, 4, 30, RGB(100,100,100));
-    fb_fill_rect(&screen, wpn_cx-10, wpn_y+5, 20, 14, RGB(120,80,40));
+    // Bow: brown arc + string
+    fb_fill_rect(&screen, wpn_cx,    wpn_y,    4,  40, RGB(120,80,40));
+    fb_fill_rect(&screen, wpn_cx-10, wpn_y+4,  10, 4,  RGB(120,80,40));
+    fb_fill_rect(&screen, wpn_cx-10, wpn_y+34, 10, 4,  RGB(120,80,40));
+    fb_fill_rect(&screen, wpn_cx-8,  wpn_y+8,  2,  26, RGB(220,220,220));
   }
 
-  // Crosshair
+  // White Minecraft crosshair
   int chx = cx + rw/2, chy = cy + view_h/2;
-  fb_fill_rect(&screen, chx-5, chy, 4, 1, RGB(0,255,0));
-  fb_fill_rect(&screen, chx+2, chy, 4, 1, RGB(0,255,0));
-  fb_fill_rect(&screen, chx, chy-5, 1, 4, RGB(0,255,0));
-  fb_fill_rect(&screen, chx, chy+2, 1, 4, RGB(0,255,0));
+  fb_fill_rect(&screen, chx-7, chy-1, 6, 3, RGB(255,255,255));
+  fb_fill_rect(&screen, chx+2, chy-1, 6, 3, RGB(255,255,255));
+  fb_fill_rect(&screen, chx-1, chy-7, 3, 6, RGB(255,255,255));
+  fb_fill_rect(&screen, chx-1, chy+2, 3, 6, RGB(255,255,255));
 
-  // === HUD BAR (bottom 40px) ===
+  // === MINECRAFT HUD ===
   int hud_y = cy + view_h;
-  fb_fill_rect(&screen, cx, hud_y, rw, 40, RGB(30,30,30));
-  fb_fill_rect(&screen, cx, hud_y, rw, 1, RGB(80,80,80));
-
-  // Health bar
-  fb_text_nobg(&screen, cx+4, hud_y+4, "HP", RGB(200,0,0));
-  fb_fill_rect(&screen, cx+24, hud_y+4, 102, 14, RGB(60,60,60));
-  int hp_w = d->health;
-  if(hp_w > 100) hp_w = 100;
-  uint hp_color = hp_w > 50 ? RGB(0,180,0) : (hp_w > 25 ? RGB(200,200,0) : RGB(200,0,0));
-  fb_fill_rect(&screen, cx+25, hud_y+5, hp_w, 12, hp_color);
-  char hpbuf[8]; gui_itoa(d->health, hpbuf);
-  fb_text_nobg(&screen, cx+50, hud_y+4, hpbuf, COL_TEXT_WHITE);
-
-  // Armor bar
-  fb_text_nobg(&screen, cx+4, hud_y+22, "AR", RGB(0,100,200));
-  fb_fill_rect(&screen, cx+24, hud_y+22, 102, 14, RGB(60,60,60));
-  int ar_w = d->armor;
-  if(ar_w > 100) ar_w = 100;
-  fb_fill_rect(&screen, cx+25, hud_y+23, ar_w, 12, RGB(0,100,200));
-
-  // Ammo
-  char ammo_str[16] = "AMMO:";
-  char ammo_num[8]; gui_itoa(d->ammo, ammo_num);
-  gui_strcat(ammo_str, ammo_num);
-  fb_text_nobg(&screen, cx+140, hud_y+4, ammo_str, RGB(200,200,0));
-
-  // Weapon name
-  char *wpn_names[] = {"FIST", "PISTOL", "SHOTGUN"};
-  fb_text_nobg(&screen, cx+140, hud_y+22, wpn_names[d->weapon], COL_TEXT_WHITE);
-
-  // Score
-  char score_str[24] = "SCORE:";
   char score_num[12]; gui_itoa(d->score, score_num);
-  gui_strcat(score_str, score_num);
-  fb_text_nobg(&screen, cx+260, hud_y+4, score_str, COL_TEXT_WHITE);
+  fb_fill_rect(&screen, cx, hud_y, rw, 40, RGB(60,50,40));
+  fb_fill_rect(&screen, cx, hud_y, rw, 1, RGB(100,90,80));
 
-  // Level
-  char lvl_str[16] = "LVL:";
-  char lvl_num[4]; gui_itoa(d->level + 1, lvl_num);
-  gui_strcat(lvl_str, lvl_num);
-  fb_text_nobg(&screen, cx+260, hud_y+22, lvl_str, COL_TEXT_LIGHT);
+  // Hearts: 10 hearts (each = 10 HP)
+  for(int hi = 0; hi < 10; hi++){
+    int hx = cx + 4 + hi * 18;
+    int hy = hud_y + 4;
+    int filled = d->health - hi * 10;
+    uint hcol = filled >= 10 ? RGB(220,50,50) : (filled > 0 ? RGB(130,30,30) : RGB(50,20,20));
+    // Heart shape using rectangles
+    fb_fill_rect(&screen, hx+2, hy,    8, 2, hcol);
+    fb_fill_rect(&screen, hx,   hy+2,  4, 6, hcol);
+    fb_fill_rect(&screen, hx+8, hy+2,  4, 6, hcol);
+    fb_fill_rect(&screen, hx+1, hy+2,  10,6, hcol);
+    fb_fill_rect(&screen, hx+2, hy+8,  8, 2, hcol);
+    fb_fill_rect(&screen, hx+3, hy+10, 6, 1, hcol);
+    fb_fill_rect(&screen, hx+4, hy+11, 4, 1, hcol);
+  }
 
-  // Kills
-  char kill_str[16] = "KILLS:";
-  char kill_num[8]; gui_itoa(d->kills, kill_num);
-  gui_strcat(kill_str, kill_num);
-  gui_strcat(kill_str, "/");
-  gui_itoa(d->total_enemies, kill_num);
-  gui_strcat(kill_str, kill_num);
-  fb_text_nobg(&screen, cx+350, hud_y+4, kill_str, COL_TEXT_LIGHT);
+  // Hotbar: 9 slots centered, selected = d->weapon
+  int slot_w = 26, slot_h = 26;
+  int hb_total = 9 * slot_w + 8 * 2;
+  int hb_x = cx + rw/2 - hb_total/2;
+  int hb_y = hud_y + 7;
+  for(int sl = 0; sl < 9; sl++){
+    int sx2 = hb_x + sl * (slot_w + 2);
+    int sel = (sl == d->weapon);
+    uint slot_bg = sel ? RGB(220,180,100) : RGB(80,70,60);
+    uint slot_bd = sel ? RGB(240,210,140) : RGB(40,35,30);
+    fb_fill_rect(&screen, sx2, hb_y, slot_w, slot_h, slot_bg);
+    fb_rect(&screen, sx2, hb_y, slot_w, slot_h, slot_bd);
+    if(sl == 0){
+      // Sword icon
+      fb_fill_rect(&screen, sx2+10, hb_y+3,  4, 14, RGB(180,180,200));
+      fb_fill_rect(&screen, sx2+6,  hb_y+15, 12, 3,  RGB(120,80,40));
+    } else if(sl == 1){
+      // Pickaxe icon
+      fb_fill_rect(&screen, sx2+11, hb_y+6,  3, 14, RGB(120,80,40));
+      fb_fill_rect(&screen, sx2+4,  hb_y+3,  16, 5,  RGB(180,180,200));
+    } else if(sl == 2){
+      // Bow icon
+      fb_fill_rect(&screen, sx2+12, hb_y+3,  2, 18, RGB(120,80,40));
+      fb_fill_rect(&screen, sx2+7,  hb_y+4,  5, 2,  RGB(120,80,40));
+      fb_fill_rect(&screen, sx2+7,  hb_y+18, 5, 2,  RGB(120,80,40));
+      fb_fill_rect(&screen, sx2+9,  hb_y+6,  2, 12, RGB(200,200,200));
+    }
+  }
 
-  // Key indicator
+  // Ammo count when bow selected
+  if(d->weapon == 2){
+    char ammo_num[8]; gui_itoa(d->ammo, ammo_num);
+    fb_text_nobg(&screen, cx+rw-56, hud_y+12, ammo_num, RGB(200,200,100));
+  }
+
+  // Diamond key indicator
   if(d->has_key){
-    fb_fill_rect(&screen, cx+350, hud_y+22, 12, 12, RGB(255,215,0));
-    fb_text_nobg(&screen, cx+366, hud_y+22, "KEY", RGB(255,215,0));
+    fb_fill_rect(&screen, cx+rw-24, hud_y+6, 14, 14, RGB(68,213,234));
+    fb_text_nobg(&screen, cx+rw-30, hud_y+22, "KEY", RGB(68,213,234));
   }
 
   // Minimap (top-right corner, over the 3D view)
@@ -2962,7 +2971,7 @@ doom_draw(struct window *w)
   if(d->dead){
     fb_fill_rect(&screen, cx+rw/2-100, cy+view_h/2-30, 200, 60, RGB(100,0,0));
     fb_rect(&screen, cx+rw/2-100, cy+view_h/2-30, 200, 60, RGB(200,0,0));
-    fb_text_nobg(&screen, cx+rw/2-52, cy+view_h/2-20, "YOU DIED", RGB(255,50,50));
+    fb_text_nobg(&screen, cx+rw/2-52, cy+view_h/2-20, "YOU DIED", RGB(220,50,50));
     char dscore[24] = "Score: ";
     gui_itoa(d->score, score_num);
     gui_strcat(dscore, score_num);
@@ -2974,7 +2983,7 @@ doom_draw(struct window *w)
   if(d->level_complete){
     fb_fill_rect(&screen, cx+rw/2-110, cy+view_h/2-40, 220, 80, RGB(0,60,0));
     fb_rect(&screen, cx+rw/2-110, cy+view_h/2-40, 220, 80, RGB(0,200,0));
-    fb_text_nobg(&screen, cx+rw/2-60, cy+view_h/2-28, "LEVEL COMPLETE!", RGB(0,255,0));
+    fb_text_nobg(&screen, cx+rw/2-60, cy+view_h/2-28, "AREA CLEARED!", RGB(80,220,80));
     char lscore[24] = "Score: ";
     gui_itoa(d->score, score_num);
     gui_strcat(lscore, score_num);
