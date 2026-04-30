@@ -6,34 +6,37 @@
 // Color helpers (32-bit XRGB)
 #define RGB(r,g,b) ((uint)(0xFF000000 | ((r)<<16) | ((g)<<8) | (b)))
 
-// Desktop theme colors (GNOME-inspired dark theme)
-#define COL_DESKTOP_BG1  RGB(26, 26, 46)
-#define COL_DESKTOP_BG2  RGB(22, 33, 62)
-#define COL_TASKBAR      RGB(36, 36, 36)
-#define COL_TASKBAR_HI   RGB(60, 60, 60)
-#define COL_WIN_TITLE    RGB(48, 48, 48)
-#define COL_WIN_TITLE_AC RGB(53, 132, 228)
-#define COL_WIN_BG       RGB(255, 255, 255)
-#define COL_WIN_BORDER   RGB(30, 30, 30)
-#define COL_BTN_CLOSE    RGB(224, 27, 36)
-#define COL_BTN_MIN      RGB(245, 194, 17)
-#define COL_BTN_MAX      RGB(46, 194, 126)
-#define COL_TEXT_WHITE   RGB(255, 255, 255)
-#define COL_TEXT_LIGHT   RGB(200, 200, 200)
-#define COL_TEXT_BLACK   RGB(0, 0, 0)
-#define COL_TEXT_GRAY    RGB(128, 128, 128)
-#define COL_ACCENT       RGB(53, 132, 228)
-#define COL_HIGHLIGHT    RGB(53, 132, 228)
-#define COL_SHADOW       RGB(0, 0, 0)
-#define COL_MENU_BG      RGB(48, 48, 48)
-#define COL_MENU_HI      RGB(53, 132, 228)
-#define COL_TERM_BG      RGB(30, 30, 30)
-#define COL_TERM_FG      RGB(204, 204, 204)
-#define COL_TERM_CURSOR  RGB(255, 255, 255)
-#define COL_ICON_BG      RGB(53, 132, 228)
-#define COL_FM_BG        RGB(43, 43, 43)
-#define COL_FM_SIDEBAR   RGB(36, 36, 36)
-#define COL_SCROLLBAR    RGB(80, 80, 80)
+// Windows XP Luna theme colors
+#define COL_DESKTOP_BG1   RGB(5, 90, 174)     // XP sky blue top
+#define COL_DESKTOP_BG2   RGB(70, 170, 60)    // XP bliss green bottom
+#define COL_TASKBAR       RGB(26, 76, 179)     // XP taskbar blue
+#define COL_TASKBAR_HI    RGB(55, 120, 215)    // XP taskbar hover
+#define COL_WIN_TITLE     RGB(10, 36, 106)     // XP title bar inactive
+#define COL_WIN_TITLE_AC  RGB(10, 60, 200)     // XP title bar active top
+#define COL_WIN_TITLE_AC2 RGB(55, 130, 230)    // XP title bar active bottom
+#define COL_WIN_BG        RGB(236, 233, 216)   // XP window content (luna beige)
+#define COL_WIN_BORDER    RGB(10, 36, 106)     // XP border blue
+#define COL_BTN_CLOSE     RGB(211, 53, 44)     // XP close red
+#define COL_BTN_MIN       RGB(42, 100, 201)    // XP min blue
+#define COL_BTN_MAX       RGB(42, 100, 201)    // XP max blue
+#define COL_TEXT_WHITE    RGB(255, 255, 255)
+#define COL_TEXT_LIGHT    RGB(200, 200, 200)
+#define COL_TEXT_BLACK    RGB(0, 0, 0)
+#define COL_TEXT_GRAY     RGB(128, 128, 128)
+#define COL_ACCENT        RGB(10, 70, 190)
+#define COL_HIGHLIGHT     RGB(49, 106, 197)
+#define COL_SHADOW        RGB(0, 0, 0)
+#define COL_MENU_BG       RGB(236, 233, 216)   // XP menu beige
+#define COL_MENU_HI       RGB(49, 106, 197)
+#define COL_TERM_BG       RGB(0, 0, 0)
+#define COL_TERM_FG       RGB(192, 192, 192)
+#define COL_TERM_CURSOR   RGB(255, 255, 255)
+#define COL_ICON_BG       RGB(49, 106, 197)
+#define COL_FM_BG         RGB(236, 233, 216)
+#define COL_FM_SIDEBAR    RGB(213, 208, 198)
+#define COL_SCROLLBAR     RGB(120, 120, 150)
+#define COL_START_TOP     RGB(55, 170, 55)     // Start button green top
+#define COL_START_BOT     RGB(20, 120, 20)     // Start button green bottom
 
 // Font dimensions
 #define FONT_W 8
@@ -48,6 +51,8 @@
 #define TITLEBAR_HEIGHT 32
 #define WIN_BORDER 2
 #define BTN_SIZE 14
+#define BTN_W 22
+#define BTN_H 14
 
 // Maximum windows
 #define MAX_WINDOWS 16

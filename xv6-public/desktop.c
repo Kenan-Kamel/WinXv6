@@ -440,16 +440,18 @@ handle_input(void)
 
     // Taskbar
     if(mouse.y >= screen.height - TASKBAR_HEIGHT){
-      // Power button (right side, before clock)
-      int power_x = screen.width - 100;
-      if(mouse.x >= power_x && mouse.x < power_x + 30){
+      int ty = screen.height - TASKBAR_HEIGHT;
+      // Power button (right tray)
+      int power_x = screen.width - 28;
+      if(point_in_rect(mouse.x, mouse.y, power_x-2, ty, 28, TASKBAR_HEIGHT)){
         // Show shutdown dialog
         open_window("Power", WIN_SHUTDOWN, screen.width/2 - 160, screen.height/2 - 80, 320, 160);
         return;
       }
 
-      if(mouse.x < 100){
-        // Activities menu
+      int ah = point_in_rect(mouse.x, mouse.y, 4, ty+3, 76, TASKBAR_HEIGHT-6);
+      if(ah){
+        // Start menu
         ctx_menu.visible = 1;
         gui_strcpy(ctx_menu.items[0], "Terminal");
         gui_strcpy(ctx_menu.items[1], "Files");
@@ -466,11 +468,11 @@ handle_input(void)
         ctx_menu.y = screen.height - TASKBAR_HEIGHT - ctx_menu.height;
       } else {
         // Window buttons in taskbar
-        int bx = 110;
+        int bx = 4 + 76 + 10;
         for(int i = 0; i < MAX_WINDOWS; i++){
           if(!windows[i].active) continue;
           int bw = fb_text_width(windows[i].title) + 20;
-          if(bw < 80) bw = 80;
+          if(bw < 90) bw = 90;
           if(point_in_rect(mouse.x, mouse.y, bx,
                            screen.height - TASKBAR_HEIGHT + 4, bw, TASKBAR_HEIGHT - 8)){
             if(windows[i].minimized){
@@ -484,7 +486,7 @@ handle_input(void)
             }
             break;
           }
-          bx += bw + 4;
+          bx += bw + 3;
         }
       }
       return;
@@ -510,20 +512,20 @@ handle_input(void)
 
         if(mouse.y < wy + TITLEBAR_HEIGHT){
           // Title bar buttons
-          int btn_y = wy + (TITLEBAR_HEIGHT - BTN_SIZE) / 2;
-          int close_x = wx + ww - BTN_SIZE - 8;
-          int min_x = close_x - BTN_SIZE - 6;
-          int max_x = min_x - BTN_SIZE - 6;
+          int btn_y_hit = wy + (TITLEBAR_HEIGHT - BTN_H) / 2;
+          int close_x = wx + ww - BTN_W - 4;
+          int max_x   = close_x - BTN_W - 2;
+          int min_x   = max_x   - BTN_W - 2;
 
-          if(point_in_rect(mouse.x, mouse.y, close_x, btn_y, BTN_SIZE, BTN_SIZE)){
+          if(point_in_rect(mouse.x, mouse.y, close_x, btn_y_hit, BTN_W, BTN_H)){
             close_window(i); return;
           }
-          if(point_in_rect(mouse.x, mouse.y, min_x, btn_y, BTN_SIZE, BTN_SIZE)){
+          if(point_in_rect(mouse.x, mouse.y, min_x, btn_y_hit, BTN_W, BTN_H)){
             windows[i].minimized = 1;
             if(active_window == i) active_window = -1;
             return;
           }
-          if(point_in_rect(mouse.x, mouse.y, max_x, btn_y, BTN_SIZE, BTN_SIZE)){
+          if(point_in_rect(mouse.x, mouse.y, max_x, btn_y_hit, BTN_W, BTN_H)){
             if(!windows[i].maximized){
               windows[i].orig_x = windows[i].x;
               windows[i].orig_y = windows[i].y;
@@ -791,24 +793,29 @@ render(void)
 static void
 draw_desktop_bg(void)
 {
-  uint c1, c2;
-  switch(wallpaper_style){
-  case 0: c1 = RGB(26,26,46); c2 = RGB(22,33,62); break;
-  case 1: c1 = RGB(20,20,20); c2 = RGB(40,20,60); break;
-  case 2: c1 = RGB(10,30,20); c2 = RGB(20,50,40); break;
-  case 3: c1 = RGB(40,20,10); c2 = RGB(60,30,20); break;
-  case 4: c1 = RGB(15,15,30); c2 = RGB(45,25,55); break;
-  default: c1 = RGB(26,26,46); c2 = RGB(22,33,62); break;
-  }
-  fb_gradient_v(&screen, 0, 0, screen.width, screen.height - TASKBAR_HEIGHT, c1, c2);
+  int w = screen.width;
+  int h = screen.height - TASKBAR_HEIGHT;
+  int split = h * 65 / 100;
 
-  // Add subtle pattern for some wallpapers
-  if(wallpaper_style == 4){
-    // Dot pattern
-    for(int y = 20; y < screen.height - TASKBAR_HEIGHT; y += 40){
-      for(int x = 20; x < screen.width; x += 40){
-        fb_fill_circle(&screen, x, y, 1, RGB(60,40,70));
-      }
+  // Sky: deep blue at top → bright blue horizon
+  fb_gradient_v(&screen, 0, 0, w, split, RGB(5,90,174), RGB(130,200,255));
+
+  // Ground: bright green at horizon → darker green at bottom
+  fb_gradient_v(&screen, 0, split, w, h - split, RGB(100,190,70), RGB(50,130,30));
+
+  // Rolling hills: two overlapping parabolic bumps
+  for(int x = 0; x < w; x++){
+    int h1 = split - (x - w*3/8) * (x - w*3/8) / (w*2);
+    int h2 = split - (x - w*5/8) * (x - w*5/8) / (w*3);
+    int hill = h1 > h2 ? h1 : h2;
+    if(hill < split - 40) hill = split - 40;
+    if(hill > split + 20) hill = split + 20;
+    for(int y = hill; y < split; y++){
+      int t = (y - hill) * 256 / (split - hill + 1);
+      int r = 100 + (130-100)*t/256;
+      int g = 190 + (200-190)*t/256;
+      int bv = 70 + (255-70)*t/256;
+      fb_pixel(&screen, x, y, RGB(r,g,bv));
     }
   }
 }
@@ -859,19 +866,35 @@ draw_window(struct window *w, int idx)
   fb_fill_rect(&screen, wx-WIN_BORDER, wy-WIN_BORDER,
                ww+2*WIN_BORDER, wh+TITLEBAR_HEIGHT+2*WIN_BORDER, bord);
 
-  // Title bar
-  uint tc = is_active ? COL_WIN_TITLE_AC : COL_WIN_TITLE;
-  fb_fill_rect(&screen, wx, wy, ww, TITLEBAR_HEIGHT, tc);
+  // Title bar — XP gradient
+  if(is_active){
+    fb_gradient_v(&screen, wx, wy, ww, TITLEBAR_HEIGHT, COL_WIN_TITLE_AC, COL_WIN_TITLE_AC2);
+  } else {
+    fb_gradient_v(&screen, wx, wy, ww, TITLEBAR_HEIGHT, RGB(10,36,106), RGB(62,88,162));
+  }
+  fb_fill_rect(&screen, wx, wy, ww, 1, RGB(80,130,220));
   fb_text_nobg(&screen, wx+10, wy+(TITLEBAR_HEIGHT-FONT_H)/2, w->title, COL_TEXT_WHITE);
 
-  // Buttons
-  int btn_y = wy + (TITLEBAR_HEIGHT - BTN_SIZE) / 2;
-  int close_x = wx + ww - BTN_SIZE - 8;
-  int min_x = close_x - BTN_SIZE - 6;
-  int max_x = min_x - BTN_SIZE - 6;
-  fb_fill_circle(&screen, close_x+BTN_SIZE/2, btn_y+BTN_SIZE/2, BTN_SIZE/2, COL_BTN_CLOSE);
-  fb_fill_circle(&screen, min_x+BTN_SIZE/2, btn_y+BTN_SIZE/2, BTN_SIZE/2, COL_BTN_MIN);
-  fb_fill_circle(&screen, max_x+BTN_SIZE/2, btn_y+BTN_SIZE/2, BTN_SIZE/2, COL_BTN_MAX);
+  // XP rectangular buttons
+  int btn_y = wy + (TITLEBAR_HEIGHT - BTN_H) / 2;
+  int close_x = wx + ww - BTN_W - 4;
+  int max_x   = close_x - BTN_W - 2;
+  int min_x   = max_x   - BTN_W - 2;
+
+  // Close (red gradient)
+  fb_gradient_v(&screen, close_x, btn_y, BTN_W, BTN_H, RGB(240,90,80), RGB(180,40,30));
+  fb_rect(&screen, close_x, btn_y, BTN_W, BTN_H, RGB(210,60,50));
+  fb_text_nobg(&screen, close_x+7, btn_y+1, "x", COL_TEXT_WHITE);
+
+  // Maximize (blue gradient)
+  fb_gradient_v(&screen, max_x, btn_y, BTN_W, BTN_H, COL_WIN_TITLE_AC2, COL_WIN_TITLE_AC);
+  fb_rect(&screen, max_x, btn_y, BTN_W, BTN_H, RGB(80,130,220));
+  fb_text_nobg(&screen, max_x+7, btn_y+1, "o", COL_TEXT_WHITE);
+
+  // Minimize (blue gradient)
+  fb_gradient_v(&screen, min_x, btn_y, BTN_W, BTN_H, COL_WIN_TITLE_AC2, COL_WIN_TITLE_AC);
+  fb_rect(&screen, min_x, btn_y, BTN_W, BTN_H, RGB(80,130,220));
+  fb_text_nobg(&screen, min_x+7, btn_y+1, "_", COL_TEXT_WHITE);
 
   int cx = wx, cy = wy + TITLEBAR_HEIGHT;
   int cw = ww, ch = wh;
@@ -1178,57 +1201,81 @@ static void
 draw_taskbar(void)
 {
   int ty = screen.height - TASKBAR_HEIGHT;
-  fb_fill_rect(&screen, 0, ty, screen.width, TASKBAR_HEIGHT, COL_TASKBAR);
-  fb_fill_rect(&screen, 0, ty, screen.width, 1, RGB(60,60,60));
+  int tw = screen.width;
 
-  // Activities button
-  int ah = point_in_rect(mouse.x, mouse.y, 0, ty, 100, TASKBAR_HEIGHT);
-  fb_fill_rect(&screen, 2, ty+4, 96, TASKBAR_HEIGHT-8, ah ? COL_TASKBAR_HI : COL_TASKBAR);
-  fb_text_nobg(&screen, 12, ty+(TASKBAR_HEIGHT-FONT_H)/2, "Activities", COL_TEXT_WHITE);
-  fb_fill_rect(&screen, 102, ty+6, 1, TASKBAR_HEIGHT-12, RGB(80,80,80));
+  // XP blue gradient taskbar
+  fb_gradient_v(&screen, 0, ty, tw, TASKBAR_HEIGHT, RGB(42,95,198), RGB(26,65,155));
+  fb_fill_rect(&screen, 0, ty, tw, 1, RGB(90,150,230));
+
+  // Green Start button
+  int sb_w = 76, sb_h = TASKBAR_HEIGHT - 6;
+  int sb_x = 4, sb_y = ty + 3;
+  int start_hover = point_in_rect(mouse.x, mouse.y, sb_x, sb_y, sb_w, sb_h);
+  fb_gradient_v(&screen, sb_x, sb_y, sb_w, sb_h,
+                start_hover ? RGB(80,200,80) : COL_START_TOP,
+                start_hover ? RGB(30,150,30) : COL_START_BOT);
+  fb_rect(&screen, sb_x, sb_y, sb_w, sb_h, RGB(25,115,25));
+  fb_fill_rect(&screen, sb_x+1, sb_y+1, sb_w-2, 2, RGB(110,230,110));
+  // Windows flag icon (4 colored squares)
+  int fx = sb_x + 6, fy = sb_y + sb_h/2 - 7;
+  fb_fill_rect(&screen, fx,   fy,   6, 6, RGB(255,50,50));
+  fb_fill_rect(&screen, fx+7, fy,   6, 6, RGB(50,150,255));
+  fb_fill_rect(&screen, fx,   fy+7, 6, 6, RGB(50,200,50));
+  fb_fill_rect(&screen, fx+7, fy+7, 6, 6, RGB(255,200,50));
+  fb_text_nobg(&screen, sb_x+22, sb_y+(sb_h-FONT_H)/2, "start", COL_TEXT_WHITE);
+
+  // Divider after start button
+  fb_fill_rect(&screen, sb_x+sb_w+4, ty+4, 1, TASKBAR_HEIGHT-8, RGB(30,60,140));
+  fb_fill_rect(&screen, sb_x+sb_w+5, ty+4, 1, TASKBAR_HEIGHT-8, RGB(80,130,220));
 
   // Window buttons
-  int bx = 110;
+  int bx = sb_x + sb_w + 10;
   for(int i = 0; i < MAX_WINDOWS; i++){
     if(!windows[i].active) continue;
     int bw = fb_text_width(windows[i].title) + 20;
-    if(bw < 80) bw = 80;
-    uint bc = COL_TASKBAR;
-    if(i == active_window && !windows[i].minimized) bc = RGB(60,60,60);
-    else if(point_in_rect(mouse.x, mouse.y, bx, ty+4, bw, TASKBAR_HEIGHT-8))
-      bc = COL_TASKBAR_HI;
-    fb_fill_rect(&screen, bx, ty+4, bw, TASKBAR_HEIGHT-8, bc);
-    if(i == active_window && !windows[i].minimized)
-      fb_fill_rect(&screen, bx, ty+TASKBAR_HEIGHT-3, bw, 3, COL_ACCENT);
-    fb_text_nobg(&screen, bx+10, ty+(TASKBAR_HEIGHT-FONT_H)/2, windows[i].title, COL_TEXT_WHITE);
-    bx += bw + 4;
+    if(bw < 90) bw = 90;
+    int hover = point_in_rect(mouse.x, mouse.y, bx, ty+4, bw, TASKBAR_HEIGHT-8);
+    int active = (i == active_window && !windows[i].minimized);
+    if(active){
+      fb_gradient_v(&screen, bx, ty+4, bw, TASKBAR_HEIGHT-8, RGB(80,140,230), RGB(40,90,190));
+      fb_rect(&screen, bx, ty+4, bw, TASKBAR_HEIGHT-8, RGB(90,150,240));
+    } else if(hover){
+      fb_gradient_v(&screen, bx, ty+4, bw, TASKBAR_HEIGHT-8, RGB(65,120,215), RGB(35,80,175));
+      fb_rect(&screen, bx, ty+4, bw, TASKBAR_HEIGHT-8, RGB(80,130,220));
+    } else {
+      fb_gradient_v(&screen, bx, ty+4, bw, TASKBAR_HEIGHT-8, RGB(55,110,205), RGB(30,70,165));
+      fb_rect(&screen, bx, ty+4, bw, TASKBAR_HEIGHT-8, RGB(60,100,195));
+    }
+    fb_text_nobg(&screen, bx+8, ty+(TASKBAR_HEIGHT-FONT_H)/2, windows[i].title, COL_TEXT_WHITE);
+    bx += bw + 3;
   }
 
-  // Right side: Power button + Clock
-  int power_x = screen.width - 100;
-  int power_hover = point_in_rect(mouse.x, mouse.y, power_x, ty, 30, TASKBAR_HEIGHT);
-  fb_fill_rect(&screen, power_x, ty+6, 26, TASKBAR_HEIGHT-12,
-               power_hover ? COL_BTN_CLOSE : RGB(60,60,60));
-  // Power icon (simple circle with line)
-  fb_fill_circle(&screen, power_x+13, ty+TASKBAR_HEIGHT/2, 7, power_hover ? COL_BTN_CLOSE : RGB(60,60,60));
-  fb_rect(&screen, power_x+6, ty+13, 14, 14, COL_TEXT_WHITE);
-  fb_fill_rect(&screen, power_x+12, ty+10, 2, 8, COL_TEXT_WHITE);
+  // Right tray: power + clock
+  int power_x = screen.width - 28;
+  int power_hover = point_in_rect(mouse.x, mouse.y, power_x-2, ty, 28, TASKBAR_HEIGHT);
+  fb_fill_rect(&screen, power_x, ty+8, 16, 16,
+               power_hover ? RGB(211,53,44) : RGB(30,70,170));
+  fb_rect(&screen, power_x, ty+8, 16, 16, RGB(80,130,220));
+  fb_fill_rect(&screen, power_x+7, ty+6, 2, 8, COL_TEXT_WHITE);
 
-  // Clock with seconds
+  // Clock
   int ticks_val = uptime();
   int secs = ticks_val / 100;
   int mins = (secs / 60) % 60;
-  int hrs = (secs / 3600) % 24;
-  int ss = secs % 60;
+  int hrs  = (secs / 3600) % 24;
+  int ss   = secs % 60;
   char clock[16];
-  clock[0] = '0'+hrs/10; clock[1] = '0'+hrs%10;
+  clock[0] = '0'+hrs/10;  clock[1] = '0'+hrs%10;
   clock[2] = ':';
   clock[3] = '0'+mins/10; clock[4] = '0'+mins%10;
   clock[5] = ':';
-  clock[6] = '0'+ss/10; clock[7] = '0'+ss%10;
+  clock[6] = '0'+ss/10;   clock[7] = '0'+ss%10;
   clock[8] = 0;
-  fb_text_nobg(&screen, screen.width-fb_text_width(clock)-8,
-               ty+(TASKBAR_HEIGHT-FONT_H)/2, clock, COL_TEXT_WHITE);
+  int cw = fb_text_width(clock) + 8;
+  int cx2 = power_x - cw - 6;
+  fb_gradient_v(&screen, cx2-2, ty+2, cw+10, TASKBAR_HEIGHT-4, RGB(30,70,170), RGB(20,50,140));
+  fb_rect(&screen, cx2-2, ty+2, cw+10, TASKBAR_HEIGHT-4, RGB(50,100,200));
+  fb_text_nobg(&screen, cx2, ty+(TASKBAR_HEIGHT-FONT_H)/2, clock, COL_TEXT_WHITE);
 }
 
 static void
