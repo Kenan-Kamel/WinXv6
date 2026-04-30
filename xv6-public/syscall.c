@@ -127,6 +127,10 @@ extern addr_t sys_flush_screen(void);
 extern addr_t sys_getmouse(void);
 extern addr_t sys_getkey_async(void);
 extern addr_t sys_halt(void);
+extern addr_t sys_socket(void);
+extern addr_t sys_bind(void);
+extern addr_t sys_listen(void);
+extern addr_t sys_accept(void);
 
 // PAGEBREAK!
 static addr_t (*syscalls[])(void) = {
@@ -156,6 +160,10 @@ static addr_t (*syscalls[])(void) = {
 [SYS_getmouse]     sys_getmouse,
 [SYS_getkey_async] sys_getkey_async,
 [SYS_halt]         sys_halt,
+[SYS_socket]       sys_socket,
+[SYS_bind]         sys_bind,
+[SYS_listen]       sys_listen,
+[SYS_accept]       sys_accept,
 };
 
 void

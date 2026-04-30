@@ -31,3 +31,5 @@
 #define IRQ_MOUSE       12
 #define IRQ_ERROR       19
 #define IRQ_SPURIOUS    31
+// IRQ_E1000 is not a compile-time constant; it is read from PCI config
+// at runtime and stored in e1000_irq (e1000.h).

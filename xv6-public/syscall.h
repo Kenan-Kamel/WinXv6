@@ -25,3 +25,7 @@
 #define SYS_getmouse     24
 #define SYS_getkey_async 25
 #define SYS_halt         26
+#define SYS_socket       27
+#define SYS_bind         28
+#define SYS_listen       29
+#define SYS_accept       30

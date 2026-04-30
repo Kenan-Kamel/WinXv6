@@ -30,6 +30,10 @@ int flush_screen(void*);
 int getmouse(void*);
 int getkey_async(void);
 int halt(int);
+int socket(int, int, int);
+int bind(int, int);
+int listen(int, int);
+int accept(int, void*, void*);
 
 // ulib.c
 int stat(char*, struct stat*);

@@ -9,6 +9,7 @@
 #include "spinlock.h"
 #include "sleeplock.h"
 #include "file.h"
+#include "net.h"
 
 struct devsw devsw[NDEV];
 struct {
@@ -76,6 +77,8 @@ fileclose(struct file *f)
     begin_op();
     iput(ff.ip);
     end_op();
+  } else if(ff.type == FD_SOCKET){
+    sockclose(ff.sock);
   }
 }
 
@@ -102,6 +105,8 @@ fileread(struct file *f, char *addr, int n)
     return -1;
   if(f->type == FD_PIPE)
     return piperead(f->pipe, addr, n);
+  if(f->type == FD_SOCKET)
+    return sockread(f->sock, addr, n);
   if(f->type == FD_INODE){
     ilock(f->ip);
     if((r = readi(f->ip, addr, f->off, n)) > 0)
@@ -123,6 +128,8 @@ filewrite(struct file *f, char *addr, int n)
     return -1;
   if(f->type == FD_PIPE)
     return pipewrite(f->pipe, addr, n);
+  if(f->type == FD_SOCKET)
+    return sockwrite(f->sock, addr, n);
   if(f->type == FD_INODE){
     // write a few blocks at a time to avoid exceeding
     // the maximum log transaction size, including

@@ -5,6 +5,7 @@ struct inode;
 struct pipe;
 struct proc;
 struct rtcdate;
+struct sock;
 struct spinlock;
 struct sleeplock;
 struct stat;
@@ -58,6 +59,24 @@ struct inode*   nameiparent(char*, char*);
 int             readi(struct inode*, char*, uint, uint);
 void            stati(struct inode*, struct stat*);
 int             writei(struct inode*, char*, uint, uint);
+
+// e1000.c
+void            e1000init(void);
+int             e1000tx(void *data, int len);
+void            e1000intr(void);
+void            e1000poll(void);
+extern uchar    e1000_irq;
+
+// net.c
+void            netinit(void);
+void            netin(void *pkt, int len);
+struct sock*    sockalloc(void);
+void            sockfree(struct sock *s);
+int             sockbind(struct sock *s, ushort port);
+int             sockaccept(struct sock *listener, struct sock **out);
+int             sockread(struct sock *s, char *buf, int n);
+int             sockwrite(struct sock *s, const char *buf, int n);
+void            sockclose(struct sock *s);
 
 // ide.c
 void            ideinit(void);
