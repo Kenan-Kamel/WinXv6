@@ -557,5 +557,11 @@ netinit(void)
     initlock(&socks[i].lock, "sock");
 
   e1000init();
+
+  // Pre-seed QEMU user-mode gateway MAC (52:55:0a:00:02:02) so the first
+  // outgoing TCP packet (SYN-ACK) isn't dropped waiting for ARP to resolve.
+  uchar gw_mac[6] = { 0x52, 0x55, 0x0a, 0x00, 0x02, 0x02 };
+  arp_cache_update(net_gw, gw_mac);
+
   cprintf("net: 10.0.2.15/24 gw 10.0.2.2\n");
 }

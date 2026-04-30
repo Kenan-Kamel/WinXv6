@@ -66,10 +66,6 @@ main(void)
     int cfd = accept(lfd, 0, 0);
     if(cfd < 0) continue;
 
-    // Reap any previously finished child processes
-    while(wait() >= 0)
-      ;
-
     int pid = fork();
     if(pid < 0){ close(cfd); continue; }
 
