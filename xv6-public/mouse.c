@@ -146,8 +146,8 @@ mouseintr(void)
 
     // Check for overflow
     if(!(mouse.bytes[0] & 0x40) && !(mouse.bytes[0] & 0x80)){
-      mouse.x += dx;
-      mouse.y -= dy; // Y is inverted
+      mouse.x += dx * 2;
+      mouse.y -= dy * 2; // Y is inverted, 2x sensitivity
 
       // Clamp to screen bounds
       if(mouse.x < 0) mouse.x = 0;

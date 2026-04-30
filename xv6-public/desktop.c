@@ -2756,20 +2756,14 @@ doom_draw(struct window *w)
       int dx = sx - d->pos_x;
       int dy = sy - d->pos_y;
 
-      // Rotate into view space
-      int inv_det = FP_ONE * FP_ONE / ((-sin_tab[d->angle]) * cos_tab[(d->angle+90)%360] / FP_ONE -
-                    cos_tab[d->angle] * (-sin_tab[(d->angle+90)%360]) / FP_ONE);
-      // This is getting complex with fixed point, use simpler approach
-
       // Transform to camera space using dot products
       int cam_x = (dx * cos_tab[d->angle] + dy * sin_tab[d->angle]) / FP_ONE; // depth
       int cam_y = (-dx * sin_tab[d->angle] + dy * cos_tab[d->angle]) / FP_ONE; // lateral
 
       if(cam_x <= FP_ONE/4) continue; // behind camera or too close
 
-      // Screen X position
-      int screen_x = rw/2 + cam_y * rw / (cam_x * 2 / FP_ONE * fov / 60);
-      if(cam_x == 0) continue;
+      // Screen X: standard raycaster billboard projection (safe — no intermediate truncation to 0)
+      int screen_x = rw/2 + (cam_y * (rw/2)) / cam_x;
 
       // Sprite screen size
       int spr_size = view_h * FP_ONE / cam_x / sprite_h_scale;
