@@ -1,0 +1,7 @@
+{"type":"server-started","port":56468,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:56468","screen_dir":"/home/kenan/CS461/testing_xv6/xv6-public/.superpowers/brainstorm/37125-1777227746/content","state_dir":"/home/kenan/CS461/testing_xv6/xv6-public/.superpowers/brainstorm/37125-1777227746/state"}
+{"type":"screen-added","file":"/home/kenan/CS461/testing_xv6/xv6-public/.superpowers/brainstorm/37125-1777227746/content/xp-style.html"}
+{"source":"user-event","type":"click","text":"📁 My Computer\n            \n              ─\n              □\n              ✕\n            \n          \n          \n          \n            FileEditViewHelp\n          \n          \n          \n            💻C:\n            📁Docs\n            🎮Games\n          \n        \n        \n        \n          ▶ Start\n          📁 My Computer\n          12:00\n        \n      \n    \n    \n      A — Full XP Theme\n      Blue gradient title bars, green Start button, Bliss-style desktop, XP-style window buttons. Most visual change.","choice":"xp-full","id":null,"timestamp":1777227823829}
+{"type":"screen-added","file":"/home/kenan/CS461/testing_xv6/xv6-public/.superpowers/brainstorm/37125-1777227746/content/waiting-1.html"}
+{"type":"screen-added","file":"/home/kenan/CS461/testing_xv6/xv6-public/.superpowers/brainstorm/37125-1777227746/content/doom-vision.html"}
+{"type":"screen-added","file":"/home/kenan/CS461/testing_xv6/xv6-public/.superpowers/brainstorm/37125-1777227746/content/minecraft-vision.html"}
+{"type":"server-stopped","reason":"owner process exited"}

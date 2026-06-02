@@ -21,3 +21,4 @@ mkfs
 .history/
 .vscode/
 cscope.out
+.worktrees/
