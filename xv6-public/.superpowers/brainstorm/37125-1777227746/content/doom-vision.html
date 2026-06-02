@@ -1,0 +1,145 @@
+<h2>Doom Visual Upgrade</h2>
+<p class="subtitle">xv6 uses a raycasting engine (like original Doom). Here's what we can improve using its existing pixel/rect drawing primitives.</p>
+
+<div class="split">
+
+  <div class="mockup">
+    <div class="mockup-header">Current</div>
+    <div class="mockup-body" style="padding:0">
+      <div style="background:#111; width:100%; height:300px; position:relative; overflow:hidden; font-family:monospace;">
+        <!-- Ceiling -->
+        <div style="background:#444; height:100px; width:100%;"></div>
+        <!-- Floor -->
+        <div style="background:#333; height:100px; width:100%; position:absolute; bottom:60px;"></div>
+        <!-- Walls - flat color -->
+        <div style="position:absolute; top:60px; left:50px; width:30px; height:140px; background:#a00;"></div>
+        <div style="position:absolute; top:80px; left:80px; width:20px; height:100px; background:#800;"></div>
+        <div style="position:absolute; top:55px; right:80px; width:25px; height:150px; background:#a00;"></div>
+        <div style="position:absolute; top:70px; right:55px; width:20px; height:120px; background:#800;"></div>
+        <div style="position:absolute; top:50px; left:120px; width:80px; height:160px; background:#b00;"></div>
+        <!-- Weapon: plain rectangle -->
+        <div style="position:absolute; bottom:65px; left:50%; transform:translateX(-50%); width:30px; height:50px; background:#888;"></div>
+        <!-- HUD bar: minimal -->
+        <div style="position:absolute; bottom:0; left:0; right:0; height:60px; background:#333; display:flex; align-items:center; padding:0 8px; gap:8px;">
+          <span style="color:#0f0; font-size:11px;">HP: 100</span>
+          <span style="color:#ff0; font-size:11px;">AMMO: 24</span>
+          <span style="color:#0af; font-size:11px;">PISTOL</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Upgraded</div>
+    <div class="mockup-body" style="padding:0">
+      <div style="background:#111; width:100%; height:300px; position:relative; overflow:hidden; font-family:monospace;">
+        <!-- Ceiling gradient -->
+        <div style="background:linear-gradient(180deg,#1a1a1a 0%,#555 100%); height:110px; width:100%;"></div>
+        <!-- Floor gradient -->
+        <div style="position:absolute; bottom:64px; left:0; right:0; height:110px; background:linear-gradient(180deg,#4a3a2a 0%,#2a1a0a 100%);"></div>
+        <!-- Walls - "brick" style with dark mortar lines -->
+        <div style="position:absolute; top:55px; left:40px; width:35px; height:155px; background:repeating-linear-gradient(180deg,#c05030 0px,#c05030 12px,#6a2010 12px,#6a2010 14px); border-right:2px solid #3a0a00;"></div>
+        <div style="position:absolute; top:70px; left:75px; width:22px; height:120px; background:repeating-linear-gradient(180deg,#903020 0px,#903020 12px,#4a1808 12px,#4a1808 14px); border-right:2px solid #2a0800;"></div>
+        <div style="position:absolute; top:50px; right:70px; width:28px; height:160px; background:repeating-linear-gradient(180deg,#c05030 0px,#c05030 12px,#6a2010 12px,#6a2010 14px); border-left:2px solid #3a0a00;"></div>
+        <div style="position:absolute; top:65px; right:42px; width:22px; height:130px; background:repeating-linear-gradient(180deg,#903020 0px,#903020 12px,#4a1808 12px,#4a1808 14px); border-left:2px solid #2a0800;"></div>
+        <div style="position:absolute; top:45px; left:110px; width:90px; height:170px; background:repeating-linear-gradient(180deg,#d06040 0px,#d06040 12px,#7a2818 12px,#7a2818 14px);"></div>
+        <!-- Shotgun sprite - detailed -->
+        <div style="position:absolute; bottom:66px; left:55%; width:90px; height:55px; transform:translateX(-30%);">
+          <!-- barrel -->
+          <div style="position:absolute; top:8px; left:30px; width:55px; height:8px; background:#aaa; border-radius:2px;"></div>
+          <div style="position:absolute; top:8px; left:30px; width:55px; height:8px; background:#888; clip-path:polygon(0 50%,100% 50%,100% 100%,0 100%);"></div>
+          <!-- stock -->
+          <div style="position:absolute; top:14px; left:0px; width:40px; height:22px; background:#8B4513; border-radius:3px; transform:rotate(-8deg);"></div>
+          <!-- pump -->
+          <div style="position:absolute; top:10px; left:42px; width:18px; height:14px; background:#666; border-radius:2px;"></div>
+          <!-- trigger guard -->
+          <div style="position:absolute; top:22px; left:22px; width:12px; height:14px; border:2px solid #888; border-radius:0 0 6px 6px; border-top:none;"></div>
+          <!-- muzzle flash -->
+          <div style="position:absolute; top:-4px; right:0px; width:14px; height:16px; background:radial-gradient(circle,#fff 0%,#ff0 40%,transparent 100%); opacity:0.7;"></div>
+        </div>
+        <!-- Doom-style HUD -->
+        <div style="position:absolute; bottom:0; left:0; right:0; height:64px; background:linear-gradient(180deg,#222 0%,#111 100%); border-top:2px solid #555; display:flex; align-items:center; padding:0 6px; gap:6px;">
+          <!-- Health -->
+          <div style="text-align:center;">
+            <div style="color:#888; font-size:8px;">HEALTH</div>
+            <div style="color:#f33; font-size:20px; font-weight:bold; text-shadow:0 0 8px #f00; line-height:1;">100%</div>
+          </div>
+          <!-- Face -->
+          <div style="width:40px; height:40px; background:#f4c077; border:2px solid #888; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">😐</div>
+          <!-- Armor -->
+          <div style="text-align:center;">
+            <div style="color:#888; font-size:8px;">ARMOR</div>
+            <div style="color:#4af; font-size:20px; font-weight:bold; line-height:1;">100%</div>
+          </div>
+          <div style="flex:1"></div>
+          <!-- Ammo -->
+          <div style="text-align:center;">
+            <div style="color:#888; font-size:8px;">AMMO</div>
+            <div style="color:#ff0; font-size:20px; font-weight:bold; line-height:1;">8</div>
+          </div>
+          <!-- Weapon slots -->
+          <div style="display:flex; flex-direction:column; gap:2px; margin-left:4px;">
+            <div style="display:flex; gap:2px;">
+              <div style="width:14px; height:10px; background:#333; border:1px solid #666; font-size:7px; color:#888; display:flex; align-items:center; justify-content:center;">1</div>
+              <div style="width:14px; height:10px; background:#555; border:1px solid #ff0; font-size:7px; color:#ff0; display:flex; align-items:center; justify-content:center;">3</div>
+              <div style="width:14px; height:10px; background:#333; border:1px solid #666; font-size:7px; color:#888; display:flex; align-items:center; justify-content:center;">4</div>
+            </div>
+            <div style="display:flex; gap:2px;">
+              <div style="width:14px; height:10px; background:#333; border:1px solid #666; font-size:7px; color:#888; display:flex; align-items:center; justify-content:center;">5</div>
+              <div style="width:14px; height:10px; background:#333; border:1px solid #666; font-size:7px; color:#888; display:flex; align-items:center; justify-content:center;">6</div>
+              <div style="width:14px; height:10px; background:#333; border:1px solid #666; font-size:7px; color:#888; display:flex; align-items:center; justify-content:center;">7</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <h3>What's included in the upgrade</h3>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+    <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+      <div class="label">Rendering</div>
+      <ul style="margin:6px 0 0 16px; font-size:13px; line-height:1.8;">
+        <li>Brick/stone wall textures (pixel patterns)</li>
+        <li>Ceiling + floor gradients</li>
+        <li>Distance-based fog shading</li>
+        <li>Larger viewport (fills window)</li>
+      </ul>
+    </div>
+    <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+      <div class="label">Weapons (7 total)</div>
+      <ul style="margin:6px 0 0 16px; font-size:13px; line-height:1.8;">
+        <li>1 — Fist (melee)</li>
+        <li>2 — Chainsaw</li>
+        <li>3 — Pistol</li>
+        <li>4 — Shotgun</li>
+        <li>5 — Super Shotgun</li>
+        <li>6 — Rocket Launcher</li>
+        <li>7 — Plasma Rifle</li>
+      </ul>
+    </div>
+    <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+      <div class="label">HUD</div>
+      <ul style="margin:6px 0 0 16px; font-size:13px; line-height:1.8;">
+        <li>Doom-style status bar</li>
+        <li>Face indicator (reacts to damage)</li>
+        <li>Weapon slot numbers</li>
+        <li>Large health/armor numbers</li>
+      </ul>
+    </div>
+    <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+      <div class="label">Gameplay</div>
+      <ul style="margin:6px 0 0 16px; line-height:1.8; font-size:13px;">
+        <li>More enemy types</li>
+        <li>Better weapon pickup sprites</li>
+        <li>Keys + locked doors</li>
+        <li>Bigger, denser maps</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Does this match what you're picturing? Anything you want to add or cut?</p>

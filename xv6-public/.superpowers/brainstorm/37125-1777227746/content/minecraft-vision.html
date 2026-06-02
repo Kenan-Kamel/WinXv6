@@ -1,0 +1,146 @@
+<h2>Minecraft-Style First-Person View</h2>
+<p class="subtitle">xv6's raycaster renders walls column-by-column — perfect for block textures. Here's the full visual direction.</p>
+
+<div class="mockup" style="max-width:680px; margin:0 auto;">
+  <div class="mockup-header">xv6 Minecraft Mode — full view</div>
+  <div class="mockup-body" style="padding:0;">
+    <div style="width:100%; height:360px; position:relative; overflow:hidden; font-family:monospace; image-rendering:pixelated;">
+
+      <!-- Sky (light blue gradient) -->
+      <div style="background:linear-gradient(180deg,#87CEEB 0%,#c8e8f8 100%); height:160px; width:100%; position:absolute; top:0;"></div>
+
+      <!-- Clouds -->
+      <div style="position:absolute; top:20px; left:40px; width:60px; height:16px; background:rgba(255,255,255,0.85); border-radius:8px;"></div>
+      <div style="position:absolute; top:15px; left:80px; width:40px; height:14px; background:rgba(255,255,255,0.85); border-radius:7px;"></div>
+      <div style="position:absolute; top:30px; right:80px; width:70px; height:16px; background:rgba(255,255,255,0.8); border-radius:8px;"></div>
+
+      <!-- Floor (grass/dirt) -->
+      <div style="position:absolute; bottom:60px; left:0; right:0; height:160px; background:linear-gradient(180deg,#5a8a2a 0%,#5a8a2a 8px,#8B5e3c 8px,#6b4423 100%);"></div>
+
+      <!-- Grass tile pattern on floor -->
+      <div style="position:absolute; bottom:155px; left:0; right:0; height:10px; background:repeating-linear-gradient(90deg,#4a7a1a 0px,#4a7a1a 18px,#5a8a2a 18px,#5a8a2a 36px);"></div>
+
+      <!-- Block walls: stone -->
+      <div style="position:absolute; top:70px; left:30px; width:50px; height:150px;
+        background:repeating-linear-gradient(0deg,#888 0px,#888 15px,#666 15px,#666 16px);
+        background-size:16px 16px;
+        outline:1px solid #444;">
+        <!-- vertical mortar lines -->
+        <div style="position:absolute; top:0; left:8px; width:1px; height:100%; background:#555; opacity:0.6;"></div>
+      </div>
+
+      <!-- Block walls: grass block (left) -->
+      <div style="position:absolute; top:85px; left:80px; width:35px; height:135px;
+        background:repeating-linear-gradient(0deg,#8B5e3c 0px,#8B5e3c 14px,#6b4423 14px,#6b4423 15px);">
+        <div style="position:absolute; top:0; left:0; right:0; height:18px; background:#4a7a1a; border-bottom:2px solid #2a5a0a;"></div>
+      </div>
+
+      <!-- Block walls: wood plank (center) -->
+      <div style="position:absolute; top:55px; left:130px; width:110px; height:165px;
+        background:repeating-linear-gradient(0deg,#a0752a 0px,#a0752a 14px,#7a5520 14px,#7a5520 15px);">
+        <!-- grain lines -->
+        <div style="position:absolute; top:0; left:22px; width:1px; height:100%; background:rgba(0,0,0,0.2);"></div>
+        <div style="position:absolute; top:0; left:44px; width:1px; height:100%; background:rgba(0,0,0,0.2);"></div>
+        <div style="position:absolute; top:0; left:66px; width:1px; height:100%; background:rgba(0,0,0,0.2);"></div>
+        <div style="position:absolute; top:0; left:88px; width:1px; height:100%; background:rgba(0,0,0,0.2);"></div>
+      </div>
+
+      <!-- Block walls: stone (right) -->
+      <div style="position:absolute; top:60px; right:70px; width:45px; height:160px;
+        background:repeating-linear-gradient(0deg,#999 0px,#999 15px,#777 15px,#777 16px);">
+      </div>
+
+      <!-- Block walls: grass block (far right) -->
+      <div style="position:absolute; top:90px; right:30px; width:35px; height:130px;
+        background:repeating-linear-gradient(0deg,#8B5e3c 0px,#8B5e3c 14px,#6b4423 14px,#6b4423 15px);">
+        <div style="position:absolute; top:0; left:0; right:0; height:16px; background:#4a7a1a;"></div>
+      </div>
+
+      <!-- Crosshair -->
+      <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+        <div style="width:16px; height:2px; background:rgba(255,255,255,0.8); position:absolute; top:0; left:-8px;"></div>
+        <div style="width:2px; height:16px; background:rgba(255,255,255,0.8); position:absolute; top:-8px; left:0;"></div>
+      </div>
+
+      <!-- Sword/tool in hand (Minecraft-style flat sprite) -->
+      <div style="position:absolute; bottom:65px; right:60px;">
+        <!-- blade -->
+        <div style="width:12px; height:50px; background:linear-gradient(90deg,#ddd,#bbb); transform:rotate(-30deg); transform-origin:bottom right; position:absolute; bottom:0; right:10px;"></div>
+        <!-- handle -->
+        <div style="width:8px; height:20px; background:#8B4513; transform:rotate(-30deg); transform-origin:bottom right; position:absolute; bottom:-14px; right:6px;"></div>
+        <!-- guard -->
+        <div style="width:20px; height:5px; background:#a0752a; transform:rotate(-30deg); transform-origin:center; position:absolute; bottom:18px; right:2px;"></div>
+      </div>
+
+      <!-- Minecraft HUD -->
+      <div style="position:absolute; bottom:0; left:0; right:0; height:60px; background:rgba(0,0,0,0.6);">
+        <!-- Health row -->
+        <div style="display:flex; align-items:center; justify-content:center; gap:2px; padding-top:4px;">
+          <!-- Hearts -->
+          <span style="color:#f00; font-size:13px;">❤</span><span style="color:#f00; font-size:13px;">❤</span>
+          <span style="color:#f00; font-size:13px;">❤</span><span style="color:#f00; font-size:13px;">❤</span>
+          <span style="color:#f00; font-size:13px;">❤</span><span style="color:#f00; font-size:13px;">❤</span>
+          <span style="color:#f00; font-size:13px;">❤</span><span style="color:#f00; font-size:13px;">❤</span>
+          <span style="color:#f00; font-size:13px;">❤</span><span style="color:#500; font-size:13px;">❤</span>
+        </div>
+        <!-- Hotbar -->
+        <div style="display:flex; align-items:center; justify-content:center; gap:3px; padding-top:3px;">
+          <div style="width:28px; height:28px; background:#8b8b8b; border:2px solid #fff; border-radius:1px; display:flex; align-items:center; justify-content:center; font-size:14px;">🗡️</div>
+          <div style="width:24px; height:24px; background:#555; border:1px solid #888; border-radius:1px; display:flex; align-items:center; justify-content:center; font-size:12px;">⛏️</div>
+          <div style="width:24px; height:24px; background:#555; border:1px solid #888; border-radius:1px; display:flex; align-items:center; justify-content:center; font-size:12px;">🪓</div>
+          <div style="width:24px; height:24px; background:#555; border:1px solid #888; border-radius:1px; display:flex; align-items:center; justify-content:center; font-size:12px;">🏹</div>
+          <div style="width:24px; height:24px; background:#555; border:1px solid #888; border-radius:1px; display:flex; align-items:center; justify-content:center; font-size:12px;">💣</div>
+          <div style="width:24px; height:24px; background:#555; border:1px solid #888; border-radius:1px;"></div>
+          <div style="width:24px; height:24px; background:#555; border:1px solid #888; border-radius:1px;"></div>
+          <div style="width:24px; height:24px; background:#555; border:1px solid #888; border-radius:1px;"></div>
+          <div style="width:24px; height:24px; background:#555; border:1px solid #888; border-radius:1px;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <h3>What changes</h3>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+      <div class="label">Look</div>
+      <ul style="margin:6px 0 0 14px; font-size:12px; line-height:1.9;">
+        <li>Blocky pixel textures on walls (grass, stone, wood, dirt)</li>
+        <li>Sky blue ceiling with clouds</li>
+        <li>Grass/dirt floor</li>
+        <li>White crosshair</li>
+      </ul>
+    </div>
+    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+      <div class="label">HUD</div>
+      <ul style="margin:6px 0 0 14px; font-size:12px; line-height:1.9;">
+        <li>Heart icons for health (10 hearts)</li>
+        <li>9-slot hotbar at bottom</li>
+        <li>Selected slot highlighted</li>
+      </ul>
+    </div>
+    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+      <div class="label">Weapons / Tools</div>
+      <ul style="margin:6px 0 0 14px; font-size:12px; line-height:1.9;">
+        <li>Sword (melee, high damage)</li>
+        <li>Pickaxe (melee)</li>
+        <li>Axe (melee)</li>
+        <li>Bow (ranged)</li>
+        <li>TNT (area explosion)</li>
+      </ul>
+    </div>
+    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">
+      <div class="label">Enemies & Maps</div>
+      <ul style="margin:6px 0 0 14px; font-size:12px; line-height:1.9;">
+        <li>Zombie (brown, melee)</li>
+        <li>Skeleton (white, ranged arrows)</li>
+        <li>Creeper (green, explodes)</li>
+        <li>Maps use block-style layouts</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:14px;">Does this look right? Confirm and I'll lock in the full design.</p>

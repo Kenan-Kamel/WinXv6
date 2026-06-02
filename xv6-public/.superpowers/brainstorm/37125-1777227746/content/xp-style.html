@@ -1,0 +1,90 @@
+<h2>Windows XP Style — What's achievable in xv6?</h2>
+<p class="subtitle">xv6 has a flat 1024×768 framebuffer with a monospace 8×16 bitmap font and basic rectangle/gradient drawing. Here are two directions for the XP look.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="xp-full" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <!-- XP Full mockup -->
+      <div style="background:#3a6ea5; width:100%; height:260px; position:relative; font-family:monospace; overflow:hidden; border-radius:4px;">
+        <!-- Desktop (Bliss-style gradient) -->
+        <div style="background:linear-gradient(180deg,#5b9bd5 0%,#7ecef4 40%,#4caf50 60%,#388e3c 100%); width:100%; height:220px; position:absolute; top:0;"></div>
+        <!-- Window -->
+        <div style="position:absolute; top:20px; left:20px; width:260px; background:#fff; border:2px solid #003182; border-radius:6px 6px 0 0; box-shadow:2px 2px 8px rgba(0,0,0,0.5);">
+          <!-- Title bar gradient -->
+          <div style="background:linear-gradient(90deg,#0a246a 0%,#2169c8 40%,#0a246a 100%); height:26px; border-radius:4px 4px 0 0; display:flex; align-items:center; padding:0 4px; justify-content:space-between;">
+            <span style="color:white; font-size:11px; font-weight:bold; text-shadow:1px 1px 2px #000;">📁 My Computer</span>
+            <div style="display:flex; gap:2px;">
+              <div style="width:18px; height:16px; background:linear-gradient(180deg,#f3c93c,#e88207); border:1px solid #8b4513; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#000;">─</div>
+              <div style="width:18px; height:16px; background:linear-gradient(180deg,#f3c93c,#e88207); border:1px solid #8b4513; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#000;">□</div>
+              <div style="width:18px; height:16px; background:linear-gradient(180deg,#e04040,#c00000); border:1px solid #8b0000; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff;">✕</div>
+            </div>
+          </div>
+          <!-- Menu bar -->
+          <div style="background:#ece9d8; height:20px; display:flex; align-items:center; padding:0 4px; gap:8px; font-size:10px; border-bottom:1px solid #aaa;">
+            <span>File</span><span>Edit</span><span>View</span><span>Help</span>
+          </div>
+          <!-- Content -->
+          <div style="background:#fff; height:80px; padding:6px; display:flex; gap:12px; flex-wrap:wrap;">
+            <div style="text-align:center; font-size:9px;"><div style="font-size:22px;">💻</div>C:</div>
+            <div style="text-align:center; font-size:9px;"><div style="font-size:22px;">📁</div>Docs</div>
+            <div style="text-align:center; font-size:9px;"><div style="font-size:22px;">🎮</div>Games</div>
+          </div>
+        </div>
+        <!-- Taskbar -->
+        <div style="position:absolute; bottom:0; left:0; right:0; height:36px; background:linear-gradient(180deg,#1d5fab 0%,#2b6cbf 30%,#1a4e9a 100%); display:flex; align-items:center; gap:4px; padding:0 4px; border-top:2px solid #0a246a;">
+          <div style="background:linear-gradient(180deg,#5cb85c,#388e3c); color:white; font-size:11px; font-weight:bold; padding:2px 8px; border-radius:10px; border:1px solid #2d7a2d;">▶ Start</div>
+          <div style="background:rgba(255,255,255,0.15); color:white; font-size:9px; padding:2px 8px; border:1px solid rgba(255,255,255,0.2); border-radius:2px; height:24px; display:flex; align-items:center;">📁 My Computer</div>
+          <div style="margin-left:auto; color:white; font-size:10px; padding:2px 6px;">12:00</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Full XP Theme</h3>
+      <p>Blue gradient title bars, green Start button, Bliss-style desktop, XP-style window buttons. Most visual change.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="xp-lite" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <!-- XP Lite mockup -->
+      <div style="background:#008080; width:100%; height:260px; position:relative; font-family:monospace; overflow:hidden; border-radius:4px;">
+        <!-- Classic teal desktop -->
+        <div style="width:100%; height:220px; position:absolute; top:0; background:#008080;"></div>
+        <!-- Window -->
+        <div style="position:absolute; top:20px; left:20px; width:260px; background:#ece9d8; border:2px solid #003182;">
+          <!-- Classic title bar -->
+          <div style="background:linear-gradient(90deg,#0a246a,#3a7fd5); height:26px; display:flex; align-items:center; padding:0 4px; justify-content:space-between;">
+            <span style="color:white; font-size:11px; font-weight:bold; text-shadow:1px 1px 1px #000;">📁 My Computer</span>
+            <div style="display:flex; gap:2px;">
+              <div style="width:16px; height:14px; background:#c0c0c0; border-top:1px solid #fff; border-left:1px solid #fff; border-bottom:1px solid #808080; border-right:1px solid #808080; font-size:9px; display:flex; align-items:center; justify-content:center;">─</div>
+              <div style="width:16px; height:14px; background:#c0c0c0; border-top:1px solid #fff; border-left:1px solid #fff; border-bottom:1px solid #808080; border-right:1px solid #808080; font-size:9px; display:flex; align-items:center; justify-content:center;">□</div>
+              <div style="width:16px; height:14px; background:#c0c0c0; border-top:1px solid #fff; border-left:1px solid #fff; border-bottom:1px solid #808080; border-right:1px solid #808080; font-size:9px; display:flex; align-items:center; justify-content:center;">✕</div>
+            </div>
+          </div>
+          <!-- Menu bar -->
+          <div style="background:#ece9d8; height:20px; display:flex; align-items:center; padding:0 4px; gap:8px; font-size:10px; border-bottom:1px solid #999;">
+            <span>File</span><span>Edit</span><span>View</span>
+          </div>
+          <div style="background:#fff; height:80px; padding:8px; display:flex; gap:12px;">
+            <div style="text-align:center; font-size:9px;"><div style="font-size:22px;">💻</div>C:</div>
+            <div style="text-align:center; font-size:9px;"><div style="font-size:22px;">📁</div>Docs</div>
+          </div>
+        </div>
+        <!-- Classic gray taskbar -->
+        <div style="position:absolute; bottom:0; left:0; right:0; height:32px; background:#c0c0c0; display:flex; align-items:center; gap:4px; padding:0 4px; border-top:2px solid #fff;">
+          <div style="background:#c0c0c0; font-size:11px; font-weight:bold; padding:2px 8px; border-top:1px solid #fff; border-left:1px solid #fff; border-bottom:1px solid #808080; border-right:1px solid #808080;">▶ Start</div>
+          <div style="background:#c0c0c0; font-size:9px; padding:2px 8px; border-top:1px solid #808080; border-left:1px solid #808080; border-bottom:1px solid #fff; border-right:1px solid #fff; height:20px; display:flex; align-items:center;">📁 My Computer</div>
+          <div style="margin-left:auto; font-size:10px; border: 1px inset #808080; padding:2px 6px; background:#c0c0c0;">12:00</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Windows Classic (Win2k/98 style)</h3>
+      <p>Gray beveled borders, blue title bar, teal desktop. Simpler to render with xv6's drawing primitives — no gradients needed.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Both keep the same apps (Terminal, File Manager, Doom, etc.) — only the visual shell changes. Which direction feels right?</p>
